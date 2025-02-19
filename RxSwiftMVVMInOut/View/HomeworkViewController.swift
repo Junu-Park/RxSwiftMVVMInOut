@@ -13,9 +13,9 @@ import SnapKit
 
 final class HomeworkViewController: UIViewController {
     
-    private let sampleUsers: [Person] = MockData.personList
-    
-    private lazy var sampleUsersSubject = BehaviorSubject(value: sampleUsers)
+//    private let sampleUsers: [Person] = MockData.personList
+//    private lazy var sampleUsersSubject = BehaviorSubject(value: sampleUsers)
+//    private var selectedUsers: [String] = []
     
     private let tableView = UITableView()
     private lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout())
@@ -23,7 +23,7 @@ final class HomeworkViewController: UIViewController {
     
     private var disposeBag = DisposeBag()
     
-    private var selectedUsers: [String] = []
+    private let viewModel: HomeworkViewModel = HomeworkViewModel()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,6 +32,7 @@ final class HomeworkViewController: UIViewController {
     }
      
     private func bind() {
+        /*
         self.sampleUsersSubject
         // TODO: .bind(to) 말고 .bind(onNext) 활용해서 만드는 법
             .bind(to: self.tableView.rx.items(cellIdentifier: PersonTableViewCell.identifier, cellType: PersonTableViewCell.self)) { index, data, cell in
@@ -73,6 +74,37 @@ final class HomeworkViewController: UIViewController {
                 if value.isEmpty {
                     owner.sampleUsersSubject.onNext(self.sampleUsers)
                 }
+            }
+            .disposed(by: self.disposeBag)
+        */
+        // MARK: - MVVM + Input/Output 적용
+        
+        let drawTableViewCell: BehaviorSubject<String?>  = BehaviorSubject(value: nil)
+        let enterSearchButton = self.searchBar.rx.searchButtonClicked
+        let enterSearchTerm = self.searchBar.rx.text
+        let selectTableViewCell = self.tableView.rx.modelSelected(Person.self)
+        
+        let output = self.viewModel.transform(input: HomeworkViewModel.Input(drawTableViewCell: drawTableViewCell, enterSearchButton: enterSearchButton, enterSearchTerm: enterSearchTerm, selectTableViewCell: selectTableViewCell))
+        
+        output.userList
+            .bind(to: self.tableView.rx.items(cellIdentifier: PersonTableViewCell.identifier, cellType: PersonTableViewCell.self)) { index, data, cell in
+                cell.usernameLabel.text = data.name
+                // TODO: MVVM + Input/Output 적용
+                cell.detailButton.rx.tap
+                    .bind(with: self) { owner, _ in
+                        let vc = DetailViewController()
+                        vc.label.text = data.name
+                        vc.title = data.name
+                        owner.navigationController?.pushViewController(vc, animated: true)
+                    }
+                    .disposed(by: cell.disposeBag)
+            }
+            .disposed(by: self.disposeBag)
+        
+        output.nameList
+            .bind(to: self.collectionView.rx.items(cellIdentifier: UserCollectionViewCell.identifier, cellType: UserCollectionViewCell.self)) {
+                index, data, cell in
+                cell.label.text = data
             }
             .disposed(by: self.disposeBag)
     }
