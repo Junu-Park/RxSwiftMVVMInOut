@@ -7,6 +7,7 @@
 
 import UIKit
 
+import RxSwift
 import SnapKit
 
 final class PersonTableViewCell: UITableViewCell {
@@ -38,6 +39,8 @@ final class PersonTableViewCell: UITableViewCell {
         button.layer.cornerRadius = 16
         return button
     }()
+    
+    var disposeBag = DisposeBag()
       
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
