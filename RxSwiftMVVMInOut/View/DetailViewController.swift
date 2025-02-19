@@ -7,6 +7,8 @@
 
 import UIKit
 
+import SnapKit
+
 final class DetailViewController: UIViewController {
 
     let label: UILabel = UILabel()
@@ -16,6 +18,7 @@ final class DetailViewController: UIViewController {
         
         self.view.backgroundColor = .lightGray
         self.view.addSubview(self.label)
+        self.label.textAlignment = .center
         self.label.backgroundColor = .green
         self.label.snp.makeConstraints { make in
             make.center.equalToSuperview()
