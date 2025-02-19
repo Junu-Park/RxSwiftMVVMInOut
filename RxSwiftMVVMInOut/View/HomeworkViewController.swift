@@ -6,15 +6,16 @@
 //
 
 import UIKit
+
 import SnapKit
 
 final class HomeworkViewController: UIViewController {
     
-    let sampleUsers: [Person] = MockData.personList
+    private let sampleUsers: [Person] = MockData.personList
     
-    let tableView = UITableView()
-    lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout())
-    let searchBar = UISearchBar()
+    private let tableView = UITableView()
+    private lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout())
+    private let searchBar = UISearchBar()
      
     override func viewDidLoad() {
         super.viewDidLoad()
